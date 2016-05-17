@@ -6,6 +6,7 @@
 #include <list>
 #include "BWT.h"
 #include "BWTAlgorithms.h"
+#include "FMExObject.h"
 
 class FMExtendNode;
 typedef std::list<FMExtendNode*> FMExtendNodePtrList;
@@ -29,6 +30,7 @@ class FMExtendNode
 		
 		//Extend the label of this node by 1 bp
 		void extend(const std::string& extend_bp,int direction);
+		void extendToNewNode(const std::string& extend_bp,int direction,std::string left,std::string right);
 		//Set the initial kmer by two direction extension
 		void SetInitial(const std::string& InitailKmer);
 		//Get the result of two direction extension
@@ -37,12 +39,17 @@ class FMExtendNode
 		//change the curr_extend_str when find Indel(small insertion/deletion)
 		//adjust_byInsertion
 		//adjust_byDeletion
-    private:
-		//Data
 		
 		// Left/Right lable is the extend string not include initial seed(kmer) 
 		std::string left_label;
 		std::string right_label;
+		
+    private:
+		//Data
+		
+		// Left/Right lable is the extend string not include initial seed(kmer) 
+		//std::string left_label;
+		//std::string right_label;
         
 	protected:
 		//Data
@@ -63,6 +70,11 @@ class FMExOverlapNode : public FMExtendNode
 		//Functions
 		FMExOverlapNode(const std::string* pQuery,FMExOverlapNode* parent):FMExtendNode(pQuery,parent)
 		{
+			lastSeedIdx=nextSeddIdx=initSeedIdx=numOfMatchSeeds=0;
+			tempMismathCount=insertion_count=deletion_count=mismatch_count=0;
+			mismatch_vector.clear();
+			deletion_vector.clear();
+			Insertion_vector.clear();
 		}
 		~FMExOverlapNode(){};
 		FMExOverlapNode* createChild(const std::string& label,int direction);
@@ -85,7 +97,7 @@ class FMExOverlapNode : public FMExtendNode
 		
 		indel_vct mismatch_vector;
 		indel_vct deletion_vector;
-		//std::vector<Insertion> Insertion_vct; 
+		std::vector<Insertion> Insertion_vector; 
 		
 		
 };
